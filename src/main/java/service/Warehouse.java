@@ -16,19 +16,15 @@ public class Warehouse {
     }
 
     public void modifyProduct(String id, String name, Category category, int rating) {
-        ListIterator<Product> iterator = products.listIterator();
-        boolean found = false;
-
-        while (iterator.hasNext()) {
-            Product product = iterator.next();
-            if (product.id().equals(id)) {
-                Product updatedProduct = new Product(id, name, category, rating, product.createdDate(), LocalDate.now());
-                iterator.set(updatedProduct);
-                found = true;
-                break;
-            }
-        }
-
+        boolean found = products.stream()
+                .filter(product -> product.id().equals(id))
+                .findFirst()
+                .map(product -> {
+                    Product updatedProduct = new Product(id, name, category, rating, product.createdDate(), LocalDate.now());
+                    products.set(products.indexOf(product), updatedProduct);
+                    return true;
+                })
+                .orElse(false);
         if (!found) {
             throw new IllegalArgumentException("Product with id " + id + " not found");
         }
@@ -38,14 +34,8 @@ public class Warehouse {
         return List.copyOf(products);
     }
 
-    public Product getProductById(String id) {
-        Optional<Product> productOpt = products.stream().filter(p -> p.id().equals(id)).findFirst();
-
-        if (productOpt.isPresent()) {
-            return productOpt.get();
-        } else {
-            throw new IllegalArgumentException("Product with id " + id + " not found");
-        }
+    public Optional<Product> getProductById(String id) {
+        return products.stream().filter(p -> p.id().equals(id)).findFirst();
     }
 
     public List<Product> getProductsByCategory(Category category) {

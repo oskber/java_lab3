@@ -67,13 +67,13 @@ public class WarehouseTest {
     @Test
     void givenProductByIdWhenGetProductByIdRuns() {
         warehouse.addProduct(product);
-        assertThat(warehouse.getProductById("1")).isEqualTo(product);
+        assertThat(warehouse.getProductById("1")).isPresent().contains(product);
     }
 
     @Test
     void givenNonExistentProductIdWhenGetProductByIdRuns() {
         warehouse.addProduct(product);
-        assertThrows(IllegalArgumentException.class, () -> warehouse.getProductById("non-existent-id"));
+        assertThat(warehouse.getProductById("non-existent-id")).isNotPresent();
     }
 
     @Test

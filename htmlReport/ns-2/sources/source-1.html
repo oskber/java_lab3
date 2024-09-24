@@ -1,0 +1,216 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > Warehouse</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">service</a>
+</div>
+
+<h1>Coverage Summary for Class: Warehouse (service)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Warehouse</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (12/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (10/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (41/41)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package service;
+&nbsp;
+&nbsp;import entities.Product;
+&nbsp;import entities.Category;
+&nbsp;
+&nbsp;import java.time.LocalDate;
+&nbsp;import java.util.*;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;import java.util.stream.Stream;
+&nbsp;
+<b class="fc">&nbsp;public class Warehouse {</b>
+<b class="fc">&nbsp;    private final List&lt;Product&gt; products = new ArrayList&lt;&gt;();</b>
+&nbsp;
+&nbsp;    public void addProduct(Product product) {
+<b class="fc">&nbsp;        products.add(product);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void modifyProduct(String id, String name, Category category, int rating) {
+<b class="fc">&nbsp;        ListIterator&lt;Product&gt; iterator = products.listIterator();</b>
+<b class="fc">&nbsp;        boolean found = false;</b>
+&nbsp;
+<b class="fc">&nbsp;        while (iterator.hasNext()) {</b>
+<b class="fc">&nbsp;            Product product = iterator.next();</b>
+<b class="fc">&nbsp;            if (product.id().equals(id)) {</b>
+<b class="fc">&nbsp;                Product updatedProduct = new Product(id, name, category, rating, product.createdDate(), LocalDate.now());</b>
+<b class="fc">&nbsp;                iterator.set(updatedProduct);</b>
+<b class="fc">&nbsp;                found = true;</b>
+&nbsp;                break;
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        if (!found) {</b>
+<b class="fc">&nbsp;            throw new IllegalArgumentException(&quot;Product with id &quot; + id + &quot; not found&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    public List&lt;Product&gt; getAllProducts() {
+<b class="fc">&nbsp;        return List.copyOf(products);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Product getProductById(String id) {
+<b class="fc">&nbsp;        Optional&lt;Product&gt; productOpt = products.stream().filter(p -&gt; p.id().equals(id)).findFirst();</b>
+&nbsp;
+<b class="fc">&nbsp;        if (productOpt.isPresent()) {</b>
+<b class="fc">&nbsp;            return productOpt.get();</b>
+&nbsp;        } else {
+<b class="fc">&nbsp;            throw new IllegalArgumentException(&quot;Product with id &quot; + id + &quot; not found&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    public List&lt;Product&gt; getProductsByCategory(Category category) {
+<b class="fc">&nbsp;        return List.copyOf(</b>
+<b class="fc">&nbsp;                products.stream()</b>
+<b class="fc">&nbsp;                        .filter(p -&gt; p.category().equals(category))</b>
+<b class="fc">&nbsp;                        .sorted(Comparator.comparing(Product::name))</b>
+<b class="fc">&nbsp;                        .toList()</b>
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;    public List&lt;Product&gt; getProductsCreatedAfter(LocalDate date) {
+<b class="fc">&nbsp;        return List.copyOf(products.stream()</b>
+<b class="fc">&nbsp;                .filter(p -&gt; p.createdDate().isAfter(date))</b>
+<b class="fc">&nbsp;                .toList()</b>
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;    public List&lt;Product&gt; getProductsByModified() {
+<b class="fc">&nbsp;        return List.copyOf(products.stream()</b>
+<b class="fc">&nbsp;                .filter(p -&gt; !p.modifiedDate().isEqual(p.createdDate()))</b>
+<b class="fc">&nbsp;                .toList()</b>
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;    public List&lt;Category&gt; getCategoriesWithProducts() {
+<b class="fc">&nbsp;        return List.copyOf(</b>
+<b class="fc">&nbsp;                products.stream()</b>
+<b class="fc">&nbsp;                        .map(Product::category)</b>
+<b class="fc">&nbsp;                        .distinct()</b>
+<b class="fc">&nbsp;                        .toList()</b>
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;    public Map&lt;Category, Long&gt; getNumberOfProductsByCategory() {
+<b class="fc">&nbsp;        return products.stream()</b>
+<b class="fc">&nbsp;                .collect(Collectors.groupingBy(Product::category, Collectors.counting()));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Map&lt;Character, Long&gt; getProductsStartingWithLetter() {
+<b class="fc">&nbsp;        return products.stream()</b>
+<b class="fc">&nbsp;                .collect(Collectors.groupingBy(p -&gt; p.name().charAt(0), Collectors.counting()));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Stream&lt;Product&gt; getProductsByMaxRatingAndSortedByDate() {
+<b class="fc">&nbsp;        return products.stream()</b>
+<b class="fc">&nbsp;                .filter(p -&gt; p.rating() == 5)</b>
+<b class="fc">&nbsp;                .sorted(Comparator.comparing(Product::createdDate));</b>
+&nbsp;    }
+&nbsp;}
+&nbsp;
+&nbsp;
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-09-13 09:27</div>
+</div>
+</body>
+</html>
